@@ -1,1 +1,24 @@
-/.venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+
+# Django SQLite database
+wit_ai_shop/db.sqlite3
+
+# Audio files
+wit_ai_shop/*.wav
+
+# Django migration caches
+*/migrations/__pycache__/
+
+# Compiled Python files (in case specific ones slipped through)
+*.pyc
+
+# Specific file exclusions (redundant, but safe to keep)
+wit_ai_shop/myspeech.wav
+wit_ai_shop/wit_ai_shop/__pycache__/settings.cpython-310.pyc

@@ -1,19 +1,25 @@
-import whisper
-from wit_files.Recorder import record_audio
+import speech_recognition as sr
+from wit_files.Recorder import record_audio  # your existing recorder
 
-def RecognizeSpeech(AUDIO_FILENAME, num_seconds=5):
-    print("🎤 Recording audio...")
-    record_audio(num_seconds, AUDIO_FILENAME)
+def RecognizeSpeech(filename="myspeech.wav", duration=4):
+    print("🎤 Recording...")
+    record_audio(duration, filename)
 
-    print("📥 Loading Whisper model...")
-    model = whisper.load_model("base")  # use "tiny" for fastest, "small"/"medium"/"large" for more accuracy
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(filename) as source:
+        audio_data = recognizer.record(source)
 
-    print("🧠 Transcribing audio...")
-    result = model.transcribe(AUDIO_FILENAME)
-
-    text = result['text'].strip()
-    return text if text else "⚠️ No speech recognized."
+    print("🧠 Transcribing with Google...")
+    try:
+        text = recognizer.recognize_google(audio_data)
+        print("📝 Transcribed Text:", text)
+        return text
+    except sr.UnknownValueError:
+        print("❌ Google could not understand the audio.")
+        return "❌ Could not understand audio"
+    except sr.RequestError as e:
+        print("❌ Could not request results; check internet.")
+        return "❌ API error"
 
 if __name__ == "__main__":
-    text = RecognizeSpeech("myspeech.wav", 4)
-    print("\n✅ You said:", text)
+    RecognizeSpeech("myspeech.wav", 4)

@@ -1,39 +1,19 @@
-import requests
-import json
-from wit_files.Recorder import record_audio, read_audio
+import whisper
+from wit_files.Recorder import record_audio
 
-# Wit speech API endpoint
-API_ENDPOINT = 'https://api.wit.ai/speech'
-
-# Wit.ai api access token
-wit_access_token = 'XMK3WRWPX4WQJVIBBA7EMGLBH23XXKXL'
-
-
-def RecognizeSpeech(AUDIO_FILENAME, num_seconds = 5):
-    
-    # record audio of specified length in specified audio file
+def RecognizeSpeech(AUDIO_FILENAME, num_seconds=5):
+    print("🎤 Recording audio...")
     record_audio(num_seconds, AUDIO_FILENAME)
-    
-    # reading audio
-    audio = read_audio(AUDIO_FILENAME)
-    
-    # defining headers for HTTP request
-    headers = {'authorization': 'Bearer ' + wit_access_token,
-               'Content-Type': 'audio/wav'}
 
-    # making an HTTP post request
-    resp = requests.post(API_ENDPOINT, headers = headers,
-                         data = audio)
-    
-    # converting response content to JSON format
-    data = json.loads(resp.content)
-    
-    # get text from data
-    
-    # return the text
-    return data
+    print("📥 Loading Whisper model...")
+    model = whisper.load_model("base")  # use "tiny" for fastest, "small"/"medium"/"large" for more accuracy
 
+    print("🧠 Transcribing audio...")
+    result = model.transcribe(AUDIO_FILENAME)
+
+    text = result['text'].strip()
+    return text if text else "⚠️ No speech recognized."
 
 if __name__ == "__main__":
-    text =  RecognizeSpeech('myspeech.wav', 4)
-    print("\nYou said: {}".format(text))
+    text = RecognizeSpeech("myspeech.wav", 4)
+    print("\n✅ You said:", text)
